@@ -1,53 +1,23 @@
 import React, { useCallback, useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { Text, View, Image } from "react-native";
-import * as Font from "expo-font";
+import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
-import { Asset } from "expo-asset";
+import { useAssets } from "expo-asset";
 
 SplashScreen.preventAutoHideAsync();
 
-const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
-
-const loadImages = (images) =>
-  images.map((image) => {
-    if (typeof image === "string") {
-      return Image.prefetch(image);
-    } else {
-      return Asset.loadAsync(image);
-    }
-  });
-
 export default function App() {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    async function prepare() {
-      try {
-        // pre-load fonts, call APIs, etc
-        const fonts = loadFonts([Ionicons.font]);
-        const images = loadImages([
-          require("./my-face.jpg"),
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOYbnNNpwBcC3oc6WGAkCv-Dsfriuv3Dd4Q&usqp=CAU",
-        ]);
-        await Promise.all([...fonts, ...images]);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        // 강의의 onFinish와 동일하게 동작
-        setReady(true);
-      }
-    }
-    prepare();
-  }, []);
+  // Hooks를 이용한 방법: font와 asset만 가져오고자 할 때 사용
+  // API를 이용한 데이터를 가져오기는 어려움
+  const [fontsLoaded] = useFonts(Ionicons.font);
+  const [assets] = useAssets([require("./my-face.jpg")]);
 
   const onLayoutRootView = useCallback(async () => {
-    if (ready) {
-      await SplashScreen.hideAsync();
-    }
-  }, [ready]);
+    if (fontsLoaded && assets) await SplashScreen.hideAsync();
+  }, [fontsLoaded, assets]);
 
-  if (!ready) {
+  if (!fontsLoaded || !assets) {
     return null;
   }
   return (
