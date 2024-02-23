@@ -7,6 +7,17 @@ import { Asset } from "expo-asset";
 
 SplashScreen.preventAutoHideAsync();
 
+const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
+
+const loadImages = (images) =>
+  images.map((image) => {
+    if (typeof image === "string") {
+      return Image.prefetch(image);
+    } else {
+      return Asset.loadAsync(image);
+    }
+  });
+
 export default function App() {
   const [ready, setReady] = useState(false);
 
@@ -14,12 +25,12 @@ export default function App() {
     async function prepare() {
       try {
         // pre-load fonts, call APIs, etc
-        // 강의의 startLoading과 동일하게 동작
-        await Font.loadAsync(Ionicons.font);
-        // 로고를 preload하기 위해 주로 사용하는 방법
-        const [{ localUri }] = await Asset.loadAsync(require("./my-face.jpg"));
-        // 서버에 있는 이미지를 가져오는 방법
-        await Image.prefetch("https://reactnative.dev/img/oss_logo.svg");
+        const fonts = loadFonts([Ionicons.font]);
+        const images = loadImages([
+          require("./my-face.jpg"),
+          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOYbnNNpwBcC3oc6WGAkCv-Dsfriuv3Dd4Q&usqp=CAU",
+        ]);
+        await Promise.all([...fonts, ...images]);
       } catch (e) {
         console.log(e);
       } finally {
