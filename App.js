@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import { Text, View, Image } from "react-native";
-import { useFonts } from "expo-font";
+import * as Font from "expo-font";
+// import { useFonts } from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
-import { useAssets } from "expo-asset";
+import { Asset } from "expo-asset";
+// import { useAssets } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import Tabs from "./navigation/Tabs";
 
@@ -33,6 +35,8 @@ export default function App() {
           "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwOYbnNNpwBcC3oc6WGAkCv-Dsfriuv3Dd4Q&usqp=CAU",
         ]);
         await Promise.all([...fonts, ...images]);
+        // console.log(fonts);
+        // console.log(images);
       } catch (e) {
         console.log(e);
       } finally {

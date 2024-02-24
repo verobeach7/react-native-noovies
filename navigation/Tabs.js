@@ -4,38 +4,34 @@ import Movies from "../screens/Movies";
 import Tv from "../screens/Tv";
 import Search from "../screens/Search";
 import { Text, View } from "react-native";
+import { useColorScheme } from "react-native";
+import { BLACK_COLOR, DARK_GREY, LIGHT_GREY, YELLOW_COLOR } from "../colors";
 
 const Tab = createBottomTabNavigator();
 
-const Tabs = () => (
-  // 모든 Tab.Screen에 screenOptions를 사용하여 공통으로 스타일 적용 가능
-  <Tab.Navigator
-    screenOptions={{
-      tabBarStyle: { backgroundColor: "tomato" },
-      tabBarLabelPosition: "beside-icon",
-      tabBarActiveTintColor: "yellow",
-      tabBarInactiveTintColor: "black",
-    }}
-  >
-    {/* 탭 단위로 다른 스타일을 적용할 때는 options를 이용 */}
-    <Tab.Screen
-      name="Movies"
-      component={Movies}
-      options={{ headerTitleStyle: { color: "tomato" } }}
-    />
-    <Tab.Screen name="Tv" component={Tv} options={{ tabBarBadge: 5 }} />
-    <Tab.Screen
-      name="Search"
-      component={Search}
-      options={{
-        headerRight: () => (
-          <View>
-            <Text>Hello</Text>
-          </View>
-        ),
+const Tabs = () => {
+  // const colorScheme = useColorScheme();
+  // 조건문을 이용하여 다크모드 여부를 Boolean으로 받을 수 있음
+  const isDark = useColorScheme() === "dark";
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: { backgroundColor: isDark ? BLACK_COLOR : "white" },
+        tabBarActiveTintColor: isDark ? YELLOW_COLOR : BLACK_COLOR,
+        tabBarInactiveTintColor: isDark ? LIGHT_GREY : DARK_GREY,
+        headerStyle: {
+          backgroundColor: isDark ? BLACK_COLOR : "white",
+        },
+        headerTitleStyle: {
+          color: isDark ? "white" : BLACK_COLOR,
+        },
       }}
-    />
-  </Tab.Navigator>
-);
+    >
+      <Tab.Screen name="Movies" component={Movies} />
+      <Tab.Screen name="Tv" component={Tv} />
+      <Tab.Screen name="Search" component={Search} />
+    </Tab.Navigator>
+  );
+};
 
 export default Tabs;
