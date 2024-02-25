@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import Root from "./navigation/Root";
+// ThemeProvider가 "react-navigation/native"에도 있기 때문에 주의가 필요함!!!
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./\bstyled";
 
