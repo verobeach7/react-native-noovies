@@ -14,19 +14,7 @@ const Tabs = () => {
   // 조건문을 이용하여 다크모드 여부를 Boolean으로 받을 수 있음
   const isDark = useColorScheme() === "dark";
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: { backgroundColor: isDark ? BLACK_COLOR : "white" },
-        tabBarActiveTintColor: isDark ? YELLOW_COLOR : BLACK_COLOR,
-        tabBarInactiveTintColor: isDark ? LIGHT_GREY : DARK_GREY,
-        headerStyle: {
-          backgroundColor: isDark ? BLACK_COLOR : "white",
-        },
-        headerTitleStyle: {
-          color: isDark ? "white" : BLACK_COLOR,
-        },
-      }}
-    >
+    <Tab.Navigator>
       <Tab.Screen name="Movies" component={Movies} />
       <Tab.Screen name="Tv" component={Tv} />
       <Tab.Screen name="Search" component={Search} />
