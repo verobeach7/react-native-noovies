@@ -9,6 +9,7 @@ import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
 import Tabs from "./navigation/Tabs";
 import Stack from "./navigation/Stack";
+import Root from "./navigation/Root";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -59,7 +60,7 @@ export default function App() {
   }
   return (
     <NavigationContainer onReady={onLayoutRootView}>
-      <Tabs />
+      <Root />
     </NavigationContainer>
   );
 }
