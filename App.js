@@ -59,7 +59,7 @@ export default function App() {
   }
   return (
     <NavigationContainer onReady={onLayoutRootView}>
-      <Stack />
+      <Tabs />
     </NavigationContainer>
   );
 }
