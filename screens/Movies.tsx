@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import {
-  ActivityIndicator,
-  Dimensions,
-  RefreshControl,
-  ScrollView,
-} from "react-native";
+import { ActivityIndicator, Dimensions, RefreshControl } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Swiper from "react-native-swiper";
 import Slide from "../components/Slide";
-import Poster from "../components/Poster";
+import VMedia from "../components/VMedia";
+import HMedia from "../components/HMedia";
 
 const options = {
   method: "GET",
@@ -37,50 +33,12 @@ const ListTitle = styled.Text`
   margin-left: 30px;
 `;
 
-const TrendingScroll = styled.ScrollView`
-  margin-top: 20px;
-`;
-
-const Movie = styled.View`
-  margin-right: 20px;
-`;
-
-const Title = styled.Text`
-  color: white;
-  font-weight: 600;
-  margin-top: 7px;
-  margin-bottom: 5px;
-`;
-const Votes = styled.Text`
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 10px;
-`;
-
 const ListContainer = styled.View`
   margin-bottom: 40px;
 `;
 
-const HMovie = styled.View`
-  padding: 0px 30px;
-  flex-direction: row;
-  margin-bottom: 30px;
-`;
-
-const HColumn = styled.View`
-  margin-left: 15px;
-  width: 80%;
-`;
-
-const Overview = styled.Text`
-  color: white;
-  opacity: 0.8;
-  width: 80%;
-`;
-
-const Release = styled.Text`
-  color: white;
-  font-size: 12px;
-  margin: 20px 0px;
+const TrendingScroll = styled.ScrollView`
+  margin-top: 20px;
 `;
 
 const ComingSoonTitle = styled(ListTitle)`
@@ -141,6 +99,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
+      {/* Movies Slider */}
       <Swiper
         horizontal
         loop
@@ -165,52 +124,34 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
           />
         ))}
       </Swiper>
+      {/* Trending VMovies */}
       <ListContainer>
         <ListTitle>Trending Movies</ListTitle>
         <TrendingScroll
-          // ScrollView 자체에 padding을 주면 끝부분이 잘려나가게 됨
-          // style={{ paddingHorizontal: 30 }}
-          // contentContainerStyle을 이용하면 element의 container에 스타일을 줄 수 있음
           contentContainerStyle={{ paddingLeft: 20 }}
           horizontal
           showsHorizontalScrollIndicator={false}
         >
           {trending.map((movie) => (
-            <Movie key={movie.id}>
-              <Poster path={movie.poster_path} />
-              <Title>
-                {movie.original_title.slice(0, 13)}
-                {movie.original_title.length > 13 ? "..." : null}
-              </Title>
-              <Votes>
-                {movie.vote_average > 0
-                  ? `⭐️ ${movie.vote_average}/10`
-                  : `Coming soon`}
-              </Votes>
-            </Movie>
+            <VMedia
+              key={movie.id}
+              posterPath={movie.poster_path}
+              originalTitle={movie.original_title}
+              voteAverage={movie.vote_average}
+            ></VMedia>
           ))}
         </TrendingScroll>
       </ListContainer>
+      {/* Upcoming HMovies */}
       <ComingSoonTitle>Coming soon</ComingSoonTitle>
       {upcoming.map((movie) => (
-        <HMovie key={movie.id}>
-          <Poster path={movie.poster_path} />
-          <HColumn>
-            <Title>{movie.original_title}</Title>
-            <Release>
-              {new Date(movie.release_date).toLocaleDateString("ko", {
-                month: "long",
-                day: "numeric",
-                year: "numeric",
-              })}
-            </Release>
-            <Overview>
-              {movie.overview !== "" && movie.overview.length > 120
-                ? `${movie.overview.slice(0, 120)}...`
-                : movie.overview}
-            </Overview>
-          </HColumn>
-        </HMovie>
+        <HMedia
+          key={movie.id}
+          posterPath={movie.poster_path}
+          originalTitle={movie.original_title}
+          releaseDate={movie.release_date}
+          overview={movie.overview}
+        />
       ))}
     </Container>
   );
