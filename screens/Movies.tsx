@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import { ActivityIndicator, Dimensions, ScrollView } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+} from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Swiper from "react-native-swiper";
 import Slide from "../components/Slide";
@@ -83,6 +88,8 @@ const ComingSoonTitle = styled(ListTitle)`
 `;
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
+  // refresh중인지 아닌지를 알려주는 역할
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [nowPlaying, setNowPlaying] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
@@ -118,12 +125,22 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   useEffect(() => {
     getData();
   }, []);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await getData();
+    setRefreshing(false);
+  };
   return loading ? (
     <Loader>
       <ActivityIndicator />
     </Loader>
   ) : (
-    <Container>
+    <Container
+      refreshControl={
+        // refreshing: 새로고침 진행중 여부, onRefresh: 작동시킬 함수
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <Swiper
         horizontal
         loop
