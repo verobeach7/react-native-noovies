@@ -100,68 +100,72 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
       <ActivityIndicator />
     </Loader>
   ) : (
-    <Container
-      refreshControl={
-        // refreshing: 새로고침 진행중 여부, onRefresh: 작동시킬 함수
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
-      {/* Movies Slider */}
-      <Swiper
-        horizontal
-        loop
-        autoplay
-        autoplayTimeout={3.5}
-        showsButtons={false}
-        showsPagination={false}
-        containerStyle={{
-          marginBottom: 30,
-          width: "100%",
-          height: SCREEN_HEIGHT / 4,
-        }}
-      >
-        {nowPlaying.map((movie) => (
-          <Slide
-            key={movie.id}
-            backdropPath={movie.backdrop_path}
-            posterPath={movie.poster_path}
-            originalTitle={movie.original_title}
-            voteAverage={movie.vote_average}
-            overview={movie.overview}
-          />
-        ))}
-      </Swiper>
-      {/* Trending VMovies */}
-      <ListContainer>
-        <ListTitle>Trending Movies</ListTitle>
-        <TrendingScroll
-          data={trending}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 30 }}
-          ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
-          renderItem={({ item }) => (
-            <VMedia
-              posterPath={item.poster_path}
-              originalTitle={item.original_title}
-              voteAverage={item.vote_average}
+    <FlatList
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      ListHeaderComponent={
+        // Fragment를 이용하여 여러개의 components를 넣어줄 수 있음
+        <>
+          {/* Movies Slider */}
+          <Swiper
+            horizontal
+            loop
+            autoplay
+            autoplayTimeout={3.5}
+            showsButtons={false}
+            showsPagination={false}
+            containerStyle={{
+              marginBottom: 30,
+              width: "100%",
+              height: SCREEN_HEIGHT / 4,
+            }}
+          >
+            {nowPlaying.map((movie) => (
+              <Slide
+                key={movie.id}
+                backdropPath={movie.backdrop_path}
+                posterPath={movie.poster_path}
+                originalTitle={movie.original_title}
+                voteAverage={movie.vote_average}
+                overview={movie.overview}
+              />
+            ))}
+          </Swiper>
+          {/* Trending VMovies */}
+          <ListContainer>
+            <ListTitle>Trending Movies</ListTitle>
+            <TrendingScroll
+              data={trending}
+              keyExtractor={(item) => item.id}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 30 }}
+              ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
+              renderItem={({ item }) => (
+                <VMedia
+                  posterPath={item.poster_path}
+                  originalTitle={item.original_title}
+                  voteAverage={item.vote_average}
+                />
+              )}
             />
-          )}
-        />
-      </ListContainer>
-      {/* Upcoming HMovies */}
-      <ComingSoonTitle>Coming soon</ComingSoonTitle>
-      {upcoming.map((movie) => (
+          </ListContainer>
+          {/* Upcoming HMovies */}
+          <ComingSoonTitle>Coming soon</ComingSoonTitle>
+        </>
+      }
+      data={upcoming}
+      keyExtractor={(item) => item.id}
+      ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
+      renderItem={({ item }) => (
         <HMedia
-          key={movie.id}
-          posterPath={movie.poster_path}
-          originalTitle={movie.original_title}
-          releaseDate={movie.release_date}
-          overview={movie.overview}
+          posterPath={item.poster_path}
+          originalTitle={item.original_title}
+          releaseDate={item.release_date}
+          overview={item.overview}
         />
-      ))}
-    </Container>
+      )}
+    />
   );
 };
 
