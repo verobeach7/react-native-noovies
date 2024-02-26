@@ -2,7 +2,8 @@ import React from "react";
 import { StyleSheet, View, useColorScheme } from "react-native";
 import styled from "styled-components/native";
 import { makeImgPath } from "../utils";
-import { BlurView } from "@react-native-community/blur";
+import { BlurView } from "expo-blur";
+// import { BlurView } from "@react-native-community/blur";
 import Poster from "./Poster";
 
 const BgImg = styled.Image``;
@@ -58,8 +59,10 @@ const Slide: React.FC<SlideProps> = ({
         source={{ uri: makeImgPath(backdropPath) }}
       />
       <BlurView
-        blurType={isDark ? "dark" : "xlight"}
-        blurAmount={5}
+        // blurType={isDark ? "dark" : "xlight"}
+        // blurAmount={5}
+        intensity={70}
+        tint={isDark ? "dark" : "light"}
         style={StyleSheet.absoluteFill}
       >
         <Wraper>
