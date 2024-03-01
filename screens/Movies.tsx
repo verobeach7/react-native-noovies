@@ -1,29 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
-import {
-  ActivityIndicator,
-  Dimensions,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, Dimensions, FlatList } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Swiper from "react-native-swiper";
 import Slide from "../components/Slide";
 import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
-
-const options = {
-  method: "GET",
-  headers: {
-    accept: "application/json",
-    Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMGM2ZDYxZWM2ZjA5ODJlOWJhMTllYzRlYzAxMGE4ZCIsInN1YiI6IjYzYzEyMmNkMDVhNTMzMDA3YzdlOWYzYiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.bhwjqiO2fNlXPuNRgRKM1aji0KXhiB1MSvA_apy9Pl0",
-  },
-};
-
-const Container = styled.ScrollView``;
+import { moviesApi } from "../api";
+import { useQuery } from "@tanstack/react-query";
 
 const Loader = styled.View`
   flex: 1;
@@ -62,46 +46,19 @@ const HSeperator = styled.View`
 const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   // refresh중인지 아닌지를 알려주는 역할
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [nowPlaying, setNowPlaying] = useState([]);
-  const [upcoming, setUpcoming] = useState([]);
-  const [trending, setTrending] = useState([]);
-  const getTrending = async () => {
-    const { results } = await (
-      await fetch("https://api.themoviedb.org/3/trending/movie/week", options)
-    ).json();
-    setTrending(results);
-  };
-  const getUpcoming = async () => {
-    const { results } = await (
-      await fetch(
-        "https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=1",
-        options
-      )
-    ).json();
-    setUpcoming(results);
-  };
-  const getNowPlaying = async () => {
-    const { results } = await (
-      await fetch(
-        "https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1",
-        options
-      )
-    ).json();
-    setNowPlaying(results);
-  };
-  const getData = async () => {
-    await Promise.all([getTrending(), getUpcoming(), getNowPlaying()]);
-    setLoading(false);
-  };
-  useEffect(() => {
-    getData();
-  }, []);
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await getData();
-    setRefreshing(false);
-  };
+  const { isLoading: nowPlayingLoading, data: nowPlayingData } = useQuery({
+    queryKey: ["nowPlaying"],
+    queryFn: moviesApi.nowPlaying,
+  });
+  const { isLoading: upcomingLoading, data: upcomingData } = useQuery({
+    queryKey: ["upcoming"],
+    queryFn: moviesApi.upcoming,
+  });
+  const { isLoading: trendingLoading, data: trendingData } = useQuery({
+    queryKey: ["trending"],
+    queryFn: moviesApi.trending,
+  });
+  const onRefresh = async () => {};
   const renderVMedia = ({ item }) => (
     <VMedia
       posterPath={item.poster_path}
@@ -118,7 +75,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
     />
   );
   const movieKeyExtractor = (item) => item.id;
-
+  const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
   return loading ? (
     <Loader>
       <ActivityIndicator />
@@ -144,7 +101,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
               height: SCREEN_HEIGHT / 4,
             }}
           >
-            {nowPlaying.map((movie) => (
+            {nowPlayingData.results.map((movie) => (
               <Slide
                 key={movie.id}
                 backdropPath={movie.backdrop_path}
@@ -159,7 +116,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
           <ListContainer>
             <ListTitle>Trending Movies</ListTitle>
             <TrendingScroll
-              data={trending}
+              data={trendingData.results}
               keyExtractor={movieKeyExtractor}
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -173,7 +130,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
       }
-      data={upcoming}
+      data={upcomingData.results}
       keyExtractor={movieKeyExtractor}
       ItemSeparatorComponent={HSeperator}
       renderItem={renderHMedia}

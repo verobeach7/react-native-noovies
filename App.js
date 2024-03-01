@@ -5,12 +5,15 @@ import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 import { Asset } from "expo-asset";
 import { NavigationContainer } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Root from "./navigation/Root";
 // ThemeProvider가 "react-navigation/native"에도 있기 때문에 주의가 필요함!!!
 import { ThemeProvider } from "styled-components/native";
 import { darkTheme, lightTheme } from "./\bstyled";
 
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 const loadFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
 
@@ -61,10 +64,12 @@ export default function App() {
     return null;
   }
   return (
-    <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
-      <NavigationContainer onReady={onLayoutRootView}>
-        <Root />
-      </NavigationContainer>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={isDark ? darkTheme : lightTheme}>
+        <NavigationContainer onReady={onLayoutRootView}>
+          <Root />
+        </NavigationContainer>
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
