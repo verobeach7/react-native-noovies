@@ -24,10 +24,12 @@ const Background = styled.Image``;
 
 const Column = styled.View`
   flex-direction: row;
-  width: 80%;
+  align-items: flex-end;
 `;
 
 const Title = styled.Text`
+  /* title이 너무 길어서 넘치는 것을 막아줌 */
+  flex-shrink: 1;
   color: white;
   font-size: 36px;
   align-self: flex-end;
