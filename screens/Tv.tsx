@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ScrollView, FlatList, RefreshControl } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { tvApi } from "../api";
@@ -7,35 +7,25 @@ import HList from "../components/HList";
 
 const Tv = () => {
   const queryClient = useQueryClient();
-  const {
-    isLoading: todayLoading,
-    data: todayData,
-    isRefetching: todayRefetching,
-  } = useQuery({
+  const [refreshing, setRefreshing] = useState(false);
+  const { isLoading: todayLoading, data: todayData } = useQuery({
     queryKey: ["tv", "today"],
     queryFn: tvApi.airingToday,
   });
-  const {
-    isLoading: topLoading,
-    data: topData,
-    isRefetching: topRefetching,
-  } = useQuery({
+  const { isLoading: topLoading, data: topData } = useQuery({
     queryKey: ["tv", "top"],
     queryFn: tvApi.topRated,
   });
-  const {
-    isLoading: trendingLoading,
-    data: trendingData,
-    isRefetching: trendingRefetching,
-  } = useQuery({
+  const { isLoading: trendingLoading, data: trendingData } = useQuery({
     queryKey: ["tv", "trending"],
     queryFn: tvApi.trending,
   });
-  const onRefresh = () => {
-    queryClient.refetchQueries(["tv"]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await queryClient.refetchQueries(["tv"]);
+    setRefreshing(false);
   };
   const loading = todayLoading || topLoading || trendingLoading;
-  const refreshing = todayRefetching || topRefetching || trendingRefetching;
   // console.log(refreshing);
   if (loading) {
     return <Loader />;

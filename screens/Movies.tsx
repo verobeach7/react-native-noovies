@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components/native";
-import { ActivityIndicator, Dimensions, FlatList } from "react-native";
+import { Dimensions, FlatList } from "react-native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Swiper from "react-native-swiper";
 import Slide from "../components/Slide";
-import VMedia from "../components/VMedia";
 import HMedia from "../components/HMedia";
-import { Movie, MovieResponse, moviesApi } from "../api";
+import { MovieResponse, moviesApi } from "../api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Loader from "../components/Loader";
 import HList from "../components/HList";
@@ -20,38 +19,28 @@ const ListTitle = styled.Text`
   margin-left: 30px;
 `;
 
-const ListContainer = styled.View`
-  margin-bottom: 40px;
-`;
-
 // TypeScript에서 styled-components의 FlatList를 이용하기 위해서는  "as unknown as typeof FlatList"를 추가해줘야함
 /* const TrendingScroll = styled.FlatList`
   margin-top: 20px;
 ` as unknown as typeof FlatList; */
 
 // TypeScript에서 styled-components의 FlatList를 이용하기 위한 2번째 방법
-const TrendingScroll = styled(FlatList<Movie>)`
-  margin-top: 20px;
-`;
 
 const ComingSoonTitle = styled(ListTitle)`
   margin-bottom: 30px;
 `;
 
-const VSeperator = styled.View`
-  width: 20px;
-`;
 const HSeperator = styled.View`
   height: 20px;
 `;
 
 const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
   const {
     isLoading: nowPlayingLoading,
     data: nowPlayingData,
     // refetch: refetchNowPlaying,
-    isRefetching: isRefetchingNowPlaying,
   } = useQuery<MovieResponse>({
     queryKey: ["movies", "nowPlaying"],
     queryFn: moviesApi.nowPlaying,
@@ -60,7 +49,6 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
     isLoading: upcomingLoading,
     data: upcomingData,
     // refetch: refetchUpcoming,
-    isRefetching: isRefetchingUpcoming,
   } = useQuery<MovieResponse>({
     queryKey: ["movies", "upcoming"],
     queryFn: moviesApi.upcoming,
@@ -69,21 +57,17 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
     isLoading: trendingLoading,
     data: trendingData,
     // refetch: refetchTrending,
-    isRefetching: isRefetchingTrending,
   } = useQuery<MovieResponse>({
     queryKey: ["movies", "trending"],
     queryFn: moviesApi.trending,
   });
   const onRefresh = async () => {
-    // useQueryClient를 이용해 한번에 refetch할 수 있음(키로 범주를 만들어줘야 함)
+    setRefreshing(true);
     queryClient.refetchQueries(["movies"]);
-    /* refetchNowPlaying();
-    refetchUpcoming();
-    refetchTrending(); */
+    setRefreshing(false);
   };
+  // console.log(upcomingData);
   const loading = nowPlayingLoading || upcomingLoading || trendingLoading;
-  const refreshing =
-    isRefetchingNowPlaying || isRefetchingUpcoming || isRefetchingTrending;
   // refreshing 작동 여부 확인에 사용
   // console.log(refreshing);
   // TypeScript 작성에 사용
