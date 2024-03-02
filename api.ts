@@ -84,6 +84,14 @@ export const moviesApi: Fetchers<MovieResponse> = {
       options
     ).then((res) => res.json());
   },
+  detail: ({ queryKey }) => {
+    const [_, id] = queryKey;
+    // console.log(query);
+    return fetch(
+      `${BASE_URL}/movie/${id}?append_to_response=videos,images`,
+      options
+    ).then((res) => res.json());
+  },
 };
 
 export const tvApi: Fetchers<TVResponse> = {
@@ -102,6 +110,14 @@ export const tvApi: Fetchers<TVResponse> = {
     // console.log(query);
     return fetch(
       `${BASE_URL}/search/tv?query=${query}&language=en-US&page=1`,
+      options
+    ).then((res) => res.json());
+  },
+  detail: ({ queryKey }) => {
+    const [_, id] = queryKey;
+    // console.log(query);
+    return fetch(
+      `${BASE_URL}/tv/${id}?append_to_response=videos,images`,
       options
     ).then((res) => res.json());
   },

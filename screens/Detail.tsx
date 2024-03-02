@@ -2,11 +2,12 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useEffect } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 import styled from "styled-components/native";
-import { Movie, TV } from "../api";
+import { Movie, TV, moviesApi, tvApi } from "../api";
 import Poster from "../components/Poster";
 import { makeImgPath } from "../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { BLACK_COLOR } from "../colors";
+import { useQuery } from "@tanstack/react-query";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -58,6 +59,18 @@ const Detail: React.FC<DetailScreenProps> = ({
   navigation: { setOptions },
   route: { params },
 }) => {
+  const { isLoading: movieLoading, data: movieData } = useQuery({
+    queryKey: ["movies", params.id],
+    queryFn: moviesApi.detail,
+    enabled: "original_title" in params,
+  });
+  const { isLoading: tvLoading, data: tvData } = useQuery({
+    queryKey: ["tv", params.id],
+    queryFn: tvApi.detail,
+    enabled: "original_name" in params,
+  });
+  // console.log("movie", movieData);
+  // console.log("tv", tvData);
   useEffect(() => {
     // setOptions method를 이용해 컴포넌트의 props, state, context를 사용하거나 바꿔줄 수 있음
     setOptions({
