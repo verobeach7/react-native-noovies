@@ -1,10 +1,16 @@
 import React from "react";
-import { StyleSheet, View, useColorScheme } from "react-native";
+import {
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  useColorScheme,
+} from "react-native";
 import styled from "styled-components/native";
 import { makeImgPath } from "../utils";
 import { BlurView } from "expo-blur";
 // import { BlurView } from "@react-native-community/blur";
 import Poster from "./Poster";
+import { useNavigation } from "@react-navigation/native";
 
 const BgImg = styled.Image``;
 
@@ -51,31 +57,37 @@ const Slide: React.FC<SlideProps> = ({
   overview,
 }) => {
   const isDark = useColorScheme() === "dark";
+  const navigation = useNavigation();
+  const goToDetail = () => {
+    navigation.navigate("Stack", { screen: "Detail" });
+  };
 
   return (
-    <View style={{ flex: 1 }}>
-      <BgImg
-        style={StyleSheet.absoluteFill}
-        source={{ uri: makeImgPath(backdropPath) }}
-      />
-      <BlurView
-        // blurType={isDark ? "dark" : "xlight"}
-        // blurAmount={5}
-        intensity={70}
-        tint={isDark ? "dark" : "light"}
-        style={StyleSheet.absoluteFill}
-      >
-        <Wraper>
-          <Poster path={posterPath} />
-          <Column>
-            <Title>{originalTitle}</Title>
-            {voteAverage > 0 ? <Votes>⭐️ {voteAverage}/10</Votes> : null}
-            <Overview numberOfLines={5}>{overview}</Overview>
-            {/* <Overview>{overview.slice(0, 90)}...</Overview> */}
-          </Column>
-        </Wraper>
-      </BlurView>
-    </View>
+    <TouchableWithoutFeedback onPress={goToDetail}>
+      <View style={{ flex: 1 }}>
+        <BgImg
+          style={StyleSheet.absoluteFill}
+          source={{ uri: makeImgPath(backdropPath) }}
+        />
+        <BlurView
+          // blurType={isDark ? "dark" : "xlight"}
+          // blurAmount={5}
+          intensity={70}
+          tint={isDark ? "dark" : "light"}
+          style={StyleSheet.absoluteFill}
+        >
+          <Wraper>
+            <Poster path={posterPath} />
+            <Column>
+              <Title>{originalTitle}</Title>
+              {voteAverage > 0 ? <Votes>⭐️ {voteAverage}/10</Votes> : null}
+              <Overview numberOfLines={5}>{overview}</Overview>
+              {/* <Overview>{overview.slice(0, 90)}...</Overview> */}
+            </Column>
+          </Wraper>
+        </BlurView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
