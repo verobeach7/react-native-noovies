@@ -49,6 +49,14 @@ export const moviesApi = {
     fetch(`${BASE_URL}/movie/now_playing?language=en-US&page=1`, options).then(
       (res) => res.json()
     ),
+  search: ({ queryKey }) => {
+    const [_, query] = queryKey;
+    // console.log(query);
+    return fetch(
+      `${BASE_URL}/search/movie?query=${query}&language=en-US&page=1`,
+      options
+    ).then((res) => res.json());
+  },
 };
 
 export const tvApi = {
@@ -62,4 +70,12 @@ export const tvApi = {
     fetch(`${BASE_URL}/tv/top_rated?language=en-US&page=1`, options).then(
       (res) => res.json()
     ),
+  search: ({ queryKey }) => {
+    const [_, query] = queryKey;
+    // console.log(query);
+    return fetch(
+      `${BASE_URL}/search/tv?query=${query}&language=en-US&page=1`,
+      options
+    ).then((res) => res.json());
+  },
 };
