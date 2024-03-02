@@ -37,6 +37,8 @@ const Tabs = () => {
           fontSize: 12,
           fontWeight: "600",
         },
+        // for Android
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tab.Screen
