@@ -42,6 +42,7 @@ const HList: React.FC<HListProps> = ({ title, data }) => (
             item.original_title ?? item.original_name
           }
           voteAverage={item.vote_average}
+          fullData={item}
         />
       )}
     />

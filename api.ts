@@ -1,3 +1,5 @@
+import { QueryFunction } from "@tanstack/react-query";
+
 const options = {
   method: "GET",
   headers: {
@@ -26,6 +28,23 @@ export interface Movie {
   vote_count: number;
 }
 
+export interface TV {
+  name: string;
+  original_name: string;
+  origin_country: string[];
+  vote_count: number;
+  backdrop_path: string | null;
+  vote_average: number;
+  genre_ids: number[];
+  id: number;
+  original_language: string;
+  overview: string;
+  poster_path: string | null;
+  first_air_date: string;
+  popularity: number;
+  media_type: string;
+}
+
 interface BaseResponse {
   page: number;
   total_pages: number;
@@ -36,9 +55,17 @@ export interface MovieResponse extends BaseResponse {
   results: Movie[];
 }
 
+export interface TVResponse extends BaseResponse {
+  results: TV[];
+}
+
+interface Fetchers<T> {
+  [key: string]: QueryFunction<T>;
+}
+
 // 각각의 fetch를 반환하기보다는 비슷한 범주를 한 분류로 묶어 객체 생성 후 객체를 export
 // 사용할 곳에서 import하여 moviesApi.trending 등으로 사용할 수 있음
-export const moviesApi = {
+export const moviesApi: Fetchers<MovieResponse> = {
   trending: () =>
     fetch(`${BASE_URL}/trending/movie/week`, options).then((res) => res.json()),
   upcoming: () =>
@@ -59,7 +86,7 @@ export const moviesApi = {
   },
 };
 
-export const tvApi = {
+export const tvApi: Fetchers<TVResponse> = {
   trending: () =>
     fetch(`${BASE_URL}/trending/tv/week`, options).then((res) => res.json()),
   airingToday: () =>
