@@ -161,6 +161,7 @@ interface TVFetchers {
 export const moviesApi: MovieFetchers = {
   trending: () =>
     fetch(`${BASE_URL}/trending/movie/week`, options).then((res) => res.json()),
+  // useInfiniteQuery를 사용하면 getNextPage를 파라미터로 받을 수 있음
   upcoming: ({ pageParam }) =>
     fetch(
       `${BASE_URL}/movie/upcoming?language=en-US&page=${pageParam}`,

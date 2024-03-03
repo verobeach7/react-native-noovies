@@ -52,13 +52,18 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
+    // 무한스크롤 Step 2. hasNextPage와 fetchNextPage 추가
     hasNextPage,
     fetchNextPage,
+    // 다음페이지를 Fetching 중인지 알려줌
+    isFetchingNextPage,
     // refetch: refetchUpcoming,
+    // 무한스크롤 Step 1.
   } = useInfiniteQuery<MovieResponse>({
     queryKey: ["movies", "upcoming"],
     queryFn: moviesApi.upcoming,
     initialPageParam: 1,
+    // 다음페이지를 구하고 다음페이지의 유무를 리턴
     getNextPageParam: (currentPage) => {
       const nextPage = currentPage.page + 1;
       /* if (nextPage > currentPage.total_pages) {
@@ -87,20 +92,23 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   // console.log(refreshing);
   // TypeScript 작성에 사용
   // console.log(Object.values(nowPlayingData?.results[0]).map((v) => typeof v));
+  // 무한스크롤 Step 4.
   const loadMore = () => {
     if (hasNextPage) {
       fetchNextPage();
     }
   };
+  const renderFooterLoadingComponent = (isFetchingNextPage: boolean) =>
+    isFetchingNextPage ? <Loader /> : null;
   return loading ? (
     <Loader />
   ) : // trendingData가 없을 경우에 null을 이용하여 TypeScript 문제를 해결
   upcomingData ? (
     <FlatList
-      // 리스트의 끝에 도달할 때 작동할 함수
+      // 무한스크롤 Step3. 리스트의 끝에 도달할 때 작동할 함수
       onEndReached={loadMore}
       // 언제쯤 함수를 실행할 것인지 간극을 조정하기 위한 설정(1에 가까울수록 일찍 작동, 0에 가까울수록 마지막에 도달하여 작동)
-      onEndReachedThreshold={1}
+      onEndReachedThreshold={0}
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListHeaderComponent={
@@ -139,6 +147,9 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
           {/* Upcoming HMovies */}
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
+      }
+      ListFooterComponent={() =>
+        renderFooterLoadingComponent(isFetchingNextPage)
       }
       data={upcomingData.pages.map((page) => page.results).flat()}
       keyExtractor={(item) => item.id + ""}
