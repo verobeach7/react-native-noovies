@@ -8,7 +8,16 @@ import {
   Platform,
 } from "react-native";
 import styled from "styled-components/native";
-import { Movie, MovieResponse, TV, TVResponse, moviesApi, tvApi } from "../api";
+import {
+  Movie,
+  MovieDetails,
+  MovieResponse,
+  TV,
+  TVDetails,
+  TVResponse,
+  moviesApi,
+  tvApi,
+} from "../api";
 import Poster from "../components/Poster";
 import { makeImgPath } from "../utils";
 import { LinearGradient } from "expo-linear-gradient";
@@ -86,31 +95,34 @@ const Detail: React.FC<DetailScreenProps> = ({
 }) => {
   const isMovie = "original_title" in params;
   // TypeScript: <MovieResponse|TVResponse>를 추가하여 queryFn이 받아올 데이터 타입 설정
-  const { isLoading, data } = useQuery<MovieResponse | TVResponse>({
+  const { isLoading, data } = useQuery<MovieDetails | TVDetails>({
     queryKey: [isMovie ? "movies" : "tv", params.id],
     queryFn: isMovie ? moviesApi.detail : tvApi.detail,
   });
   const shareMedia = async () => {
-    const isAndroid = Platform.OS === "android";
-    const homepage = isMovie
-      ? `https://www.imdb.com/title/${data.imdb_id}/`
-      : data.homepage;
-    if (isAndroid) {
-      await Share.share({
-        message: `${params.overview}\nCheck it out: ${homepage}`,
-        title:
-          "original_title" in params
-            ? params.original_title
-            : params.original_name,
-      });
-    } else {
-      await Share.share({
-        url: homepage,
-        title:
-          "original_title" in params
-            ? params.original_title
-            : params.original_name,
-      });
+    if (data) {
+      const isAndroid = Platform.OS === "android";
+      const homepage =
+        isMovie && "imdb_id" in data
+          ? `https://www.imdb.com/title/${data.imdb_id}/`
+          : data.homepage;
+      if (isAndroid) {
+        await Share.share({
+          message: `${params.overview}\nCheck it out: ${homepage}`,
+          title:
+            "original_title" in params
+              ? params.original_title
+              : params.original_name,
+        });
+      } else {
+        await Share.share({
+          url: homepage,
+          title:
+            "original_title" in params
+              ? params.original_title
+              : params.original_name,
+        });
+      }
     }
   };
   const ShareButton = () => (
