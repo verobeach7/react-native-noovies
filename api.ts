@@ -161,10 +161,11 @@ interface TVFetchers {
 export const moviesApi: MovieFetchers = {
   trending: () =>
     fetch(`${BASE_URL}/trending/movie/week`, options).then((res) => res.json()),
-  upcoming: () =>
-    fetch(`${BASE_URL}/movie/upcoming?language=en-US&page=1`, options).then(
-      (res) => res.json()
-    ),
+  upcoming: ({ pageParam }) =>
+    fetch(
+      `${BASE_URL}/movie/upcoming?language=en-US&page=${pageParam}`,
+      options
+    ).then((res) => res.json()),
   nowPlaying: () =>
     fetch(`${BASE_URL}/movie/now_playing?language=en-US&page=1`, options).then(
       (res) => res.json()

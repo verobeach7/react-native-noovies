@@ -6,7 +6,11 @@ import Swiper from "react-native-swiper";
 import Slide from "../components/Slide";
 import HMedia from "../components/HMedia";
 import { MovieResponse, moviesApi } from "../api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import Loader from "../components/Loader";
 import HList from "../components/HList";
 
@@ -48,10 +52,21 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   const {
     isLoading: upcomingLoading,
     data: upcomingData,
+    hasNextPage,
+    fetchNextPage,
     // refetch: refetchUpcoming,
-  } = useQuery<MovieResponse>({
+  } = useInfiniteQuery<MovieResponse>({
     queryKey: ["movies", "upcoming"],
     queryFn: moviesApi.upcoming,
+    initialPageParam: 1,
+    getNextPageParam: (currentPage) => {
+      const nextPage = currentPage.page + 1;
+      /* if (nextPage > currentPage.total_pages) {
+        return null;
+      }
+      return nextPage;*/
+      return nextPage > currentPage.total_pages ? null : nextPage;
+    },
   });
   const {
     isLoading: trendingLoading,
@@ -72,11 +87,20 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
   // console.log(refreshing);
   // TypeScript 작성에 사용
   // console.log(Object.values(nowPlayingData?.results[0]).map((v) => typeof v));
+  const loadMore = () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  };
   return loading ? (
     <Loader />
   ) : // trendingData가 없을 경우에 null을 이용하여 TypeScript 문제를 해결
   upcomingData ? (
     <FlatList
+      // 리스트의 끝에 도달할 때 작동할 함수
+      onEndReached={loadMore}
+      // 언제쯤 함수를 실행할 것인지 간극을 조정하기 위한 설정(1에 가까울수록 일찍 작동, 0에 가까울수록 마지막에 도달하여 작동)
+      onEndReachedThreshold={1}
       refreshing={refreshing}
       onRefresh={onRefresh}
       ListHeaderComponent={
@@ -116,7 +140,7 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
           <ComingSoonTitle>Coming soon</ComingSoonTitle>
         </>
       }
-      data={upcomingData.results}
+      data={upcomingData.pages.map((page) => page.results).flat()}
       keyExtractor={(item) => item.id + ""}
       ItemSeparatorComponent={HSeperator}
       renderItem={({ item }) => (
@@ -133,3 +157,23 @@ const Movies: React.FC<NativeStackScreenProps<any, "Movie">> = () => {
 };
 
 export default Movies;
+
+/*{
+"pageParams": [undefined],
+"pages": [
+  {"dates": [Object], "page": 1, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 2, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 3, "results": [Array], "total_pages": 18, "total_results": 348}
+  {"dates": [Object], "page": 4, "results": [Array], "total_pages": 18, "total_results": 348}
+  ]
+}
+
+
+data.pages.map(page => results)
+
+[[Movie], [Movie], [Movie], [Movie], ...].flat()
+
+.flat()은 Array 안의 Array들을 꺼내서 하나의 Array로 만들어줌
+
+[Movie, Movie, Movie, Movie, ...]
+*/
